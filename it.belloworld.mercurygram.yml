@@ -109,8 +109,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/systemd/systemd.git
-        commit: de9dbc37ad4aa637e200ac02a0545095997055df
-        tag: v261
+        commit: eff9446d505d62c075bed37d606860b38cfe51fb
+        tag: v261.1
         x-checker-data:
           type: json
           url: https://api.github.com/repos/systemd/systemd/releases/latest
@@ -385,8 +385,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/Mercurygram/mdesktop.git
-        commit: a3e66c870309b3c2c3fd0afffc3f0c3404e8e190
-        tag: v6.9.3.4
+        commit: b3cbed78e9b5882096ae2cc2a4ef098ddaa4e4d5
+        tag: v6.9.3.5
         x-checker-data:
           type: json
           url: https://api.github.com/repos/Mercurygram/mdesktop/releases
