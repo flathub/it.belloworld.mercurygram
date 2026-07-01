@@ -393,5 +393,12 @@ modules:
           tag-query: first | .tag_name
           timestamp-query: first | .published_at
           version-query: $tag | sub("^[vV]"; "")
+      # release.yml patches the 4-part version at build time, but this manifest
+      # builds the raw tagged tree; without this the AppStream/Flatpak version
+      # drops the fork counter (X.Y.Z.N -> X.Y.Z). Derive the tag from the
+      # checkout so the version bumps automatically with the git source above.
+      - type: shell
+        commands:
+          - python3 Telegram/build/set_release_version.py "$(git describe --tags --exact-match)"
     cleanup:
       - /share/icons/hicolor/512x512@2
