@@ -385,8 +385,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/Mercurygram/mdesktop.git
-        commit: c8997c1926de0540b6d3b570a82e767c38fd962e
-        tag: v6.9.3.7
+        commit: e05fcf6a160c5de595fe11dff747fd6bdf8793b0
+        tag: v6.9.3.8
         x-checker-data:
           type: json
           url: https://api.github.com/repos/Mercurygram/mdesktop/releases
