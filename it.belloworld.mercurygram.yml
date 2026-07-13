@@ -385,13 +385,13 @@ modules:
     sources:
       - type: git
         url: https://github.com/Mercurygram/mdesktop.git
-        commit: ec750b6cbf1f0ab2ab1be59e3c3f9e009c96267f
-        tag: v6.9.4.2-beta
+        commit: a7d6926407f5bba588c3fec737cdf8d63f50c5cc
+        tag: v6.9.3.8
         x-checker-data:
           type: json
-          url: https://api.github.com/repos/Mercurygram/mdesktop/releases
-          tag-query: first | .tag_name
-          timestamp-query: first | .published_at
+          url: https://api.github.com/repos/Mercurygram/mdesktop/releases/latest
+          tag-query: .tag_name
+          timestamp-query: .published_at
           version-query: $tag | sub("^[vV]"; "")
       # release.yml patches the 4-part version at build time, but this manifest
       # builds the raw tagged tree; without this the AppStream/Flatpak version
