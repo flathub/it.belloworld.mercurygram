@@ -292,7 +292,7 @@ modules:
             "https://download.qt.io/archive/qt/\($v[0]).\($v[1])/\($version)/single/qt-everywhere-src-\($version).tar.xz"
       - type: git
         url: https://github.com/desktop-app/patches.git
-        commit: 701cfb4b3d6612188d168f198c842114fd64726f
+        commit: 5c6549de54d24aa11bff0968b92fae06afe5b168
         dest: patches
         x-checker-data:
           type: json
@@ -385,8 +385,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/Mercurygram/mdesktop.git
-        commit: 18f3c45cd0c64e705e479701a89f735868d7d047
-        tag: v7.0.4.1
+        commit: 0ab408d421ad5d596bb2ac13d7a4bf64c24da01e
+        tag: v7.0.6.1
         x-checker-data:
           type: json
           url: https://api.github.com/repos/Mercurygram/mdesktop/releases/latest
