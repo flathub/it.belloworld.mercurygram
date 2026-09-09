@@ -272,8 +272,8 @@ modules:
       - -DINPUT_openssl=linked
     sources:
       - type: archive
-        url: https://download.qt.io/archive/qt/6.11/6.11.1/single/qt-everywhere-src-6.11.1.tar.xz
-        sha256: 252acef8c5ae68074d91cadba2ee4a83465051bbb970dd26e8f0daa0f3904e03
+        url: https://download.qt.io/archive/qt/6.11/6.11.2/single/qt-everywhere-src-6.11.2.tar.xz
+        sha256: 6dcfbca271d76a6502741a2c0dc6fc98ef7dd0b7b4cfd0abcebb285a86a26f33
         x-checker-data:
           type: json
           parent-id: tdesktop-git-0
@@ -292,7 +292,7 @@ modules:
             "https://download.qt.io/archive/qt/\($v[0]).\($v[1])/\($version)/single/qt-everywhere-src-\($version).tar.xz"
       - type: git
         url: https://github.com/desktop-app/patches.git
-        commit: 27efa67b60881c52b112cf924d705e573d03a0ab
+        commit: c2cc44fca4a8d0e20d1ef0f40884d717c750f0a4
         dest: patches
         x-checker-data:
           type: json
@@ -385,8 +385,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/Mercurygram/mdesktop.git
-        commit: ab374f9298a00f7decd1ae43a6444e12cc33293d
-        tag: v7.2.5.2
+        commit: 9abf2508e9c795c6e75132f4a05fcd9f9d2ce6c2
+        tag: v7.2.7.1
         x-checker-data:
           type: json
           url: https://api.github.com/repos/Mercurygram/mdesktop/releases/latest
