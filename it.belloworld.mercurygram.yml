@@ -20,6 +20,7 @@ finish-args:
   - --unset-env=QT_PLUGIN_PATH
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.llvm22
+  - org.freedesktop.Sdk.Extension.rust-stable
 build-options:
   append-path: /usr/lib/sdk/llvm22/bin
   append-ld-library-path: /usr/lib/sdk/llvm22/lib
@@ -368,6 +369,34 @@ modules:
             "https://api.github.com/repos/tdlib/td/commits/\($commit)"
           timestamp-query: >-
             .commit.committer.date
+    cleanup:
+      - '*'
+
+  - name: tlottie
+    buildsystem: simple
+    build-options:
+      append-path: /usr/lib/sdk/rust-stable/bin
+      env:
+        CARGO_HOME: /run/build/tlottie/cargo
+        CARGO_NET_OFFLINE: 'true'
+    build-commands:
+      - cargo rustc --lib --release --locked --features c-api --crate-type staticlib
+      - install -Dm644 target/release/libtlottie.a /app/lib/libtlottie.a
+      - install -Dm644 include/tlottie.h /app/include/tlottie/tlottie.h
+    sources:
+      # The commit is pinned by the tdesktop tree itself
+      # (Telegram/build/prepare/prepare.py, full form in
+      # Telegram/build/docker/centos_env/Dockerfile). The repository has no
+      # tags and the snap recipe carries no tlottie part, so there is nothing
+      # x-checker-data could follow: bump this by hand together with tdesktop.
+      - type: git
+        url: https://github.com/dkaraush/tlottie.git
+        commit: 758c7cb74444f1c3c9923065c40fdb3aad8b7d60
+      # None of these crates is compiled for this feature set, but the resolver
+      # still refuses to run without them, and the build has no network.
+      # Regenerate with flatpak-cargo-generator.py on the pinned Cargo.lock
+      # whenever the commit above moves.
+      - tlottie-cargo-sources.json
     cleanup:
       - '*'
 
