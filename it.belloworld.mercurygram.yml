@@ -391,7 +391,7 @@ modules:
       # x-checker-data could follow: bump this by hand together with tdesktop.
       - type: git
         url: https://github.com/dkaraush/tlottie.git
-        commit: 758c7cb74444f1c3c9923065c40fdb3aad8b7d60
+        commit: 4b940c7942fbde8ee56f10f39a5224a4153bd91e
       # None of these crates is compiled for this feature set, but the resolver
       # still refuses to run without them, and the build has no network.
       # Regenerate with flatpak-cargo-generator.py on the pinned Cargo.lock
