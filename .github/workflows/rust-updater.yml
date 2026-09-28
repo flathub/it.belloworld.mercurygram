@@ -1,0 +1,26 @@
+name: Update Rust sources
+on: pull_request
+permissions:
+  contents: write
+jobs:
+  rust-updater:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login == 'flathubbot'
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Update Rust sources
+        run: |
+          set -euo pipefail
+          pip install aiohttp tomlkit
+          work="$RUNNER_TEMP/tlottie"
+          mkdir -p "$work"
+          curl -fsSLo "$work/flatpak-cargo-generator.py" https://raw.githubusercontent.com/flatpak/flatpak-builder-tools/41c20aa10819cdb2a4f3ca171758a96d1955c018/cargo/flatpak-cargo-generator.py
+          commit=$(yq '.modules[] | select(.name == "tlottie").sources[0].commit' it.belloworld.mercurygram.yml)
+          curl -fsSLo "$work/Cargo.lock" "https://raw.githubusercontent.com/dkaraush/tlottie/$commit/Cargo.lock"
+          python3 "$work/flatpak-cargo-generator.py" "$work/Cargo.lock" -o tlottie-cargo-sources.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898+github-actions[bot]@users.noreply.github.com'
+          git add tlottie-cargo-sources.json
+          git diff --staged --quiet || (git commit -m "Update Rust sources" && git push)

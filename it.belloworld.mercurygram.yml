@@ -27,6 +27,7 @@ build-options:
   cflags: -g1
   cxxflags: -g1
   env:
+    CCACHE_COMPILERCHECK: '%compiler% -v'
     CMAKE_BUILD_TYPE: None
     CMAKE_PREFIX_PATH: /app
 modules:
@@ -77,8 +78,8 @@ modules:
         "Jinja2" --no-build-isolation
     sources:
       - type: file
-        url: https://files.pythonhosted.org/packages/46/ef/34533186e76c526d9ec17a1ad9a10c7354cbfb20f51583cc36dfe4bdccd0/flit_core-4.0.2.tar.gz
-        sha256: b6929defd93884b584d7c87829e0e7b5c26ed6be17b0b873979019314aa841c8
+        url: https://files.pythonhosted.org/packages/e7/91/add211b38c357bf1b94900b4f79c34661a92be65c0243d2b0a3393c5092d/flit_core-4.1.0.tar.gz
+        sha256: 62e12b63ead8335b37f59fabb977c7167fe476dafb5e41785dfa8c9aff843bc6
         x-checker-data:
           type: pypi
           name: flit-core
@@ -110,8 +111,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/systemd/systemd.git
-        commit: 4925d9f07fc697efccd98a93046ff535b8832445
-        tag: v261.2
+        commit: 8cc40e0c5e9234bf45084751ac53b1fbfe70b492
+        tag: v262
         x-checker-data:
           type: json
           url: https://api.github.com/repos/systemd/systemd/releases/latest
@@ -170,8 +171,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/protocolbuffers/protobuf.git
-        commit: f377bfefc5e2cfab68b816903c25b23e091c439d
-        tag: v36.1
+        commit: 2c74169b34066ceb8ddb6b882fcb3fb32d737a55
+        tag: v36.2
         x-checker-data:
           type: json
           url: https://api.github.com/repos/protocolbuffers/protobuf/releases/latest
@@ -264,6 +265,8 @@ modules:
   - name: qt
     buildsystem: cmake-ninja
     builddir: true
+    build-options:
+      strip: true
     config-opts:
       - -DBUILD_SHARED_LIBS=OFF
       - -DBUILD_WITH_PCH=OFF
@@ -293,7 +296,7 @@ modules:
             "https://download.qt.io/archive/qt/\($v[0]).\($v[1])/\($version)/single/qt-everywhere-src-\($version).tar.xz"
       - type: git
         url: https://github.com/desktop-app/patches.git
-        commit: c2cc44fca4a8d0e20d1ef0f40884d717c750f0a4
+        commit: 519aaa084608fa6f9a2bfbd1959d133c44d94227
         dest: patches
         x-checker-data:
           type: json
@@ -384,18 +387,25 @@ modules:
       - install -Dm644 target/release/libtlottie.a /app/lib/libtlottie.a
       - install -Dm644 include/tlottie.h /app/include/tlottie/tlottie.h
     sources:
-      # The commit is pinned by the tdesktop tree itself
-      # (Telegram/build/prepare/prepare.py, full form in
-      # Telegram/build/docker/centos_env/Dockerfile). The repository has no
-      # tags and the snap recipe carries no tlottie part, so there is nothing
-      # x-checker-data could follow: bump this by hand together with tdesktop.
+      # Both commits come from mdesktop's snap/snapcraft.yaml (tlottie and
+      # patches parts) at the tdesktop tag below. x-checker-data can follow
+      # them the same way as tg_owt and tde2e once Flathub grants the
+      # module-tlottie-checker-tracks-commits lint exception; until then bump
+      # them by hand together with tdesktop.
       - type: git
         url: https://github.com/dkaraush/tlottie.git
-        commit: 758c7cb74444f1c3c9923065c40fdb3aad8b7d60
+        commit: 31f1b542f88e7b4be9a01e749920d857535fc715
+      - type: git
+        url: https://github.com/desktop-app/patches.git
+        commit: 519aaa084608fa6f9a2bfbd1959d133c44d94227
+        dest: patches
+      - type: shell
+        commands:
+          - git apply $PWD/patches/tlottie.patch
       # None of these crates is compiled for this feature set, but the resolver
       # still refuses to run without them, and the build has no network.
-      # Regenerate with flatpak-cargo-generator.py on the pinned Cargo.lock
-      # whenever the commit above moves.
+      # .github/workflows/rust-updater.yml regenerates this file on bot PRs
+      # from the Cargo.lock of the pinned tlottie commit.
       - tlottie-cargo-sources.json
     cleanup:
       - '*'
@@ -411,11 +421,13 @@ modules:
     config-opts:
       - -DTDESKTOP_API_ID=575730
       - -DTDESKTOP_API_HASH=723c7927097f8487d229438af766e329
+    post-install:
+      - ccache --evict-older-than 1d
     sources:
       - type: git
         url: https://github.com/Mercurygram/mdesktop.git
-        commit: 9abf2508e9c795c6e75132f4a05fcd9f9d2ce6c2
-        tag: v7.2.7.1
+        commit: c7787490370a145a72816a526c6fd2a853e75b0d
+        tag: v7.2.9.2
         x-checker-data:
           type: json
           url: https://api.github.com/repos/Mercurygram/mdesktop/releases/latest
