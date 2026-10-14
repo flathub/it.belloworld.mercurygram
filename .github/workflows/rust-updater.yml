@@ -13,14 +13,26 @@ jobs:
       - name: Update Rust sources
         run: |
           set -euo pipefail
-          pip install aiohttp tomlkit
-          work="$RUNNER_TEMP/tlottie"
+          pip install aiohttp tomlkit PyYAML
+          work="$RUNNER_TEMP/tdesktop_rust"
           mkdir -p "$work"
           curl -fsSLo "$work/flatpak-cargo-generator.py" https://raw.githubusercontent.com/flatpak/flatpak-builder-tools/41c20aa10819cdb2a4f3ca171758a96d1955c018/cargo/flatpak-cargo-generator.py
-          commit=$(yq '.modules[] | select(.name == "tlottie").sources[0].commit' it.belloworld.mercurygram.yml)
-          curl -fsSLo "$work/Cargo.lock" "https://raw.githubusercontent.com/dkaraush/tlottie/$commit/Cargo.lock"
-          python3 "$work/flatpak-cargo-generator.py" "$work/Cargo.lock" -o tlottie-cargo-sources.json
+          # shellcheck disable=SC2016
+          query='.modules[] | select(.name == "tdesktop_rust").sources[] | select(tag == "!!map" and has("x-cargo-lock"))
+            | .url as $url | .commit as $commit
+            | .["x-cargo-lock"][] | $url + " " + $commit + " " + .'
+          yq "$query" it.belloworld.mercurygram.yml > "$work/locks"
+          n=0
+          while read -r url commit lock; do
+            n=$((n + 1))
+            repo=$(echo "$url" | sed -r 's@^https://github.com/(.*)\.git$@\1@')
+            curl -fsSLo "$work/$n.lock" "https://raw.githubusercontent.com/$repo/$commit/$lock"
+            python3 "$work/flatpak-cargo-generator.py" --yaml "$work/$n.lock" -o "$work/$n.yml"
+          done < "$work/locks"
+          # shellcheck disable=SC2016
+          yq ea '. as $i ireduce ([]; . + $i) | unique_by(.dest + "/" + (.["dest-filename"] // ""))' \
+            "$work"/*.yml > tdesktop_rust.yml
           git config user.name 'github-actions[bot]'
           git config user.email '41898+github-actions[bot]@users.noreply.github.com'
-          git add tlottie-cargo-sources.json
+          git add tdesktop_rust.yml
           git diff --staged --quiet || (git commit -m "Update Rust sources" && git push)
