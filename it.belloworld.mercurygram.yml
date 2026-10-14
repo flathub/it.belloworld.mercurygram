@@ -12,6 +12,7 @@ finish-args:
   - --socket=fallback-x11
   - --socket=pulseaudio
   - --device=all
+  - --system-talk-name=org.bluez
   - --talk-name=org.freedesktop.Notifications
   - --talk-name=org.gnome.Mutter.IdleMonitor
   - --talk-name=org.kde.StatusNotifierWatcher
@@ -20,17 +21,19 @@ finish-args:
   - --talk-name=org.ayatana.indicator.application
   - --talk-name=org.sigxcpu.Feedback
 sdk-extensions:
-  - org.freedesktop.Sdk.Extension.llvm22
   - org.freedesktop.Sdk.Extension.rust-stable
 build-options:
-  append-path: /usr/lib/sdk/llvm22/bin
-  append-ld-library-path: /usr/lib/sdk/llvm22/lib
+  append-path: /usr/lib/sdk/rust-stable/bin
   cflags: -g1
   cxxflags: -g1
   env:
     CCACHE_COMPILERCHECK: '%compiler% -v'
     CMAKE_BUILD_TYPE: None
     CMAKE_PREFIX_PATH: /app
+    CARGO_NET_OFFLINE: 'true'
+    CARGO_PROFILE_RELEASE_OPT_LEVEL: '3'
+    CARGO_PROFILE_RELEASE_LTO: 'off'
+    CARGO_PROFILE_RELEASE_PANIC: unwind
 modules:
   - name: pkg-config
     buildsystem: simple
@@ -245,7 +248,7 @@ modules:
     sources:
       - type: git
         url: https://github.com/desktop-app/tg_owt.git
-        commit: 26068e29bfa8d74a9dc9c8f7f94172fafbc262b8
+        commit: d1cf250ea73de26c4c1f0a3c8173eb2648efbb04
         x-checker-data:
           type: json
           parent-id: tdesktop-git-0
@@ -291,38 +294,57 @@ modules:
     cleanup:
       - '*'
 
-  - name: tlottie
+  - name: tdesktop_rust
     buildsystem: simple
     build-options:
-      append-path: /usr/lib/sdk/rust-stable/bin
       env:
-        CARGO_HOME: /run/build/tlottie/cargo
-        CARGO_NET_OFFLINE: 'true'
+        CARGO_HOME: /run/build/tdesktop_rust/cargo
     build-commands:
-      - cargo rustc --lib --release --locked --features c-api --crate-type staticlib
-      - install -Dm644 target/release/libtlottie.a /app/lib/libtlottie.a
-      - install -Dm644 include/tlottie.h /app/include/tlottie/tlottie.h
+      - |
+        set -euo pipefail
+        cargo new --lib --vcs none tdesktop_rust
+        cd tdesktop_rust
+        printf 'pub use ::tlottie;\npub use ::wallet_engine;\n' > src/lib.rs
+        cargo add --path ../tlottie --features c-api
+        cargo add --path ../wallet-engine
+        cargo rustc --lib --release \
+          --crate-type staticlib --crate-type cdylib \
+          -- --print native-static-libs
+        mkdir -p $FLATPAK_DEST/lib $FLATPAK_DEST/include/tlottie $FLATPAK_DEST/include/wallet_engine
+        objcopy --strip-debug target/release/libtdesktop_rust.a $FLATPAK_DEST/lib/libtdesktop_rust.a
+        cp ../tlottie/include/tlottie.h $FLATPAK_DEST/include/tlottie/tlottie.h
+        cargo run --locked --manifest-path ../wallet-engine/bindgen/cpp/bindgen/Cargo.toml -- \
+          --library --out-dir $FLATPAK_DEST/include/wallet_engine \
+          target/release/libtdesktop_rust.so
     sources:
-      # Both commits come from mdesktop's snap/snapcraft.yaml (tlottie and
-      # patches parts) at the tdesktop tag below. x-checker-data can follow
-      # them the same way as tg_owt and tde2e once Flathub grants the
-      # module-tlottie-checker-tracks-commits lint exception; until then bump
-      # them by hand together with tdesktop.
+      # The three commits come from mdesktop's snap/snapcraft.yaml (tlottie,
+      # wallet-engine and patches parts) at the tdesktop tag below.
+      # x-checker-data can follow them the same way as tg_owt and tde2e once
+      # Flathub grants the module-tdesktop_rust-checker-tracks-commits lint
+      # exception; until then bump them by hand together with tdesktop.
       - type: git
+        dest: tlottie
         url: https://github.com/dkaraush/tlottie.git
-        commit: 31f1b542f88e7b4be9a01e749920d857535fc715
+        commit: 92df98dc209bc39b1e567ec74a8c86a0af5239de
+        x-cargo-lock:
+          - Cargo.lock
+      - type: git
+        dest: wallet-engine
+        url: https://github.com/i582/wallet-engine.git
+        commit: e59e0d89d7ee90c388bf36e3334c5b276f396697
+        x-cargo-lock:
+          - Cargo.lock
+          - bindgen/cpp/Cargo.lock
       - type: git
         url: https://github.com/desktop-app/patches.git
-        commit: 519aaa084608fa6f9a2bfbd1959d133c44d94227
+        commit: aec474953ff7ee9b6e4cd9b8658288ea86d124f3
         dest: patches
       - type: shell
         commands:
-          - git apply $PWD/patches/tlottie.patch
-      # None of these crates is compiled for this feature set, but the resolver
-      # still refuses to run without them, and the build has no network.
+          - git -C wallet-engine apply $PWD/patches/wallet-engine.patch
       # .github/workflows/rust-updater.yml regenerates this file on bot PRs
-      # from the Cargo.lock of the pinned tlottie commit.
-      - tlottie-cargo-sources.json
+      # from the Cargo.lock files listed in x-cargo-lock above.
+      - tdesktop_rust.yml
     cleanup:
       - '*'
 
@@ -344,8 +366,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/Mercurygram/mdesktop.git
-        commit: 63e1dcab732dd87f47fc2080148146e820a14827
-        tag: v7.2.9.3
+        commit: ec9fa78f62c792099c663ce269241a8d29147d2a
+        tag: v7.3.1.1
         x-checker-data:
           type: json
           url: https://api.github.com/repos/Mercurygram/mdesktop/releases/latest
