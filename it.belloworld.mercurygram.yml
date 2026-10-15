@@ -296,7 +296,7 @@ modules:
             "https://download.qt.io/archive/qt/\($v[0]).\($v[1])/\($version)/single/qt-everywhere-src-\($version).tar.xz"
       - type: git
         url: https://github.com/desktop-app/patches.git
-        commit: 519aaa084608fa6f9a2bfbd1959d133c44d94227
+        commit: aec474953ff7ee9b6e4cd9b8658288ea86d124f3
         dest: patches
         x-checker-data:
           type: json
@@ -329,7 +329,7 @@ modules:
     sources:
       - type: git
         url: https://github.com/desktop-app/tg_owt.git
-        commit: 26068e29bfa8d74a9dc9c8f7f94172fafbc262b8
+        commit: d1cf250ea73de26c4c1f0a3c8173eb2648efbb04
         x-checker-data:
           type: json
           parent-id: tdesktop-git-0
@@ -426,8 +426,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/Mercurygram/mdesktop.git
-        commit: 63e1dcab732dd87f47fc2080148146e820a14827
-        tag: v7.2.9.3
+        commit: ec9fa78f62c792099c663ce269241a8d29147d2a
+        tag: v7.3.1.1
         x-checker-data:
           type: json
           url: https://api.github.com/repos/Mercurygram/mdesktop/releases/latest
