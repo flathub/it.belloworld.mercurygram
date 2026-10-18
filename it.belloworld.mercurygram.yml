@@ -32,7 +32,7 @@ build-options:
     CMAKE_PREFIX_PATH: /app
     CARGO_NET_OFFLINE: 'true'
     CARGO_PROFILE_RELEASE_OPT_LEVEL: '3'
-    CARGO_PROFILE_RELEASE_LTO: 'off'
+    CARGO_PROFILE_RELEASE_LTO: off
     CARGO_PROFILE_RELEASE_PANIC: unwind
 modules:
   - name: pkg-config
@@ -91,8 +91,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/systemd/systemd.git
-        commit: 8cc40e0c5e9234bf45084751ac53b1fbfe70b492
-        tag: v262
+        commit: 73612ea502d53baf9b0df4336cfc296a7ee0d524
+        tag: v262.1
         x-checker-data:
           type: json
           url: https://api.github.com/repos/systemd/systemd/releases/latest
