@@ -190,8 +190,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/cisco/openh264.git
-        commit: 652bdb7719f30b52b08e506645a7322ff1b2cc6f
-        tag: v2.6.0
+        commit: 1bca62311e447fd9c39fc93de2c4b96cd5ce971c
+        tag: v2.7.0
         x-checker-data:
           type: json
           url: https://api.github.com/repos/cisco/openh264/releases/latest
@@ -248,7 +248,7 @@ modules:
     sources:
       - type: git
         url: https://github.com/desktop-app/tg_owt.git
-        commit: d1cf250ea73de26c4c1f0a3c8173eb2648efbb04
+        commit: 07fb35bc33b3e79125a1beab7690e830f183f5d8
         x-checker-data:
           type: json
           parent-id: tdesktop-git-0
@@ -366,8 +366,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/Mercurygram/mdesktop.git
-        commit: ec9fa78f62c792099c663ce269241a8d29147d2a
-        tag: v7.3.1.1
+        commit: 3b099de1d10e27d537c79987297aa4ddc1ac60ac
+        tag: v7.3.2.1
         x-checker-data:
           type: json
           url: https://api.github.com/repos/Mercurygram/mdesktop/releases/latest
