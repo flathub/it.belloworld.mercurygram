@@ -230,7 +230,7 @@ modules:
     sources:
       - type: git
         url: https://github.com/desktop-app/tg_owt.git
-        commit: 07fb35bc33b3e79125a1beab7690e830f183f5d8
+        commit: 020feec5c040fdae2cf752c2c2be62ddde7c236d
         x-checker-data:
           type: json
           parent-id: tdesktop-git-0
@@ -348,8 +348,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/Mercurygram/mdesktop.git
-        commit: 2a8f355a6ac542a8395636e37a2be037da849c2b
-        tag: v7.3.3.2
+        commit: ff8b2f467ad84955844f70d2deccebe9fc62c9ee
+        tag: v7.4.2.1
         x-checker-data:
           type: json
           url: https://api.github.com/repos/Mercurygram/mdesktop/releases/latest
